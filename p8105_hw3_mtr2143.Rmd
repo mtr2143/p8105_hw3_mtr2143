@@ -1,0 +1,6 @@
+---
+title: "Homework 3"
+author: "Matthew T. Russell"
+date: "10/20/2021"
+output: github_document
+---
