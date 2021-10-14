@@ -9,6 +9,7 @@ output: github_document
 library(tidyverse)
 library(p8105.datasets)
 library(lubridate)
+library(knitr)
 ```
 
 # Problem 1
@@ -43,7 +44,7 @@ instacart %>%
 ```{r, message=FALSE}
 aisles <-
   instacart %>% 
-    count(aisle, aisle_id, name = "total_items_ordered", sort = T)
+    count(aisle, name = "total_items_ordered", sort = T)
 ```
 
 There are `r nrow(aisles)` aisles in the `instacart` data. The top five aisles ordered from are
@@ -61,8 +62,20 @@ aisles %>%
   coord_flip()
 ```
 
+###### Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
 
-*Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
+```{r, message=FALSE}
+instacart %>% 
+  filter(aisle %in% c("baking ingredients", "dog food care", "packaged vegetables fruits")) %>% 
+  count(aisle, product_name, name = "qty_purchased") %>% 
+  arrange(desc(qty_purchased)) %>% 
+  group_by(aisle) %>% 
+  slice(1:3) %>% 
+  kable(caption = 
+          "Three Most Popular Items in Baking Ingredients, Dog Food Care, and Packaged Fruits &
+           Veggies Aisles")
+```
+
 
 Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
 
