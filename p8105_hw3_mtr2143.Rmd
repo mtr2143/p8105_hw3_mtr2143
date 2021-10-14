@@ -43,9 +43,7 @@ instacart %>%
 ```{r, message=FALSE}
 aisles <-
   instacart %>% 
-    group_by(aisle_id, aisle) %>% 
-    summarize(sum_products_ordered = n()) %>% 
-    arrange(desc(sum_products_ordered))
+    count(aisle, aisle_id, name = "total_items_ordered", sort = T)
 ```
 
 There are `r nrow(aisles)` aisles in the `instacart` data. The top five aisles ordered from are
@@ -54,12 +52,14 @@ There are `r nrow(aisles)` aisles in the `instacart` data. The top five aisles o
 
 ###### Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
 
-```{r}
-total_items_aisle <-
-  instacart %>% 
-    group_by(aisle_id, aisle) %>% 
-    summarize(sum_products_ordered = sum(product_id)) %>% 
-    filter(sum_products_ordered > 10000)
+```{r, message=FALSE}
+# instacart %>% 
+#   filter(
+#     count(aisle) > 10000
+#   ) %>% 
+#   ggplot(aes(x = aisle)) +
+#   geom_bar() +
+#   coord_flip()
 ```
     
 
