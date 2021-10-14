@@ -40,11 +40,11 @@ instacart %>%
 
 ###### How many aisles are there, and which aisles are the most items ordered from?
 
-```{r}
+```{r, message=FALSE}
 aisles <-
   instacart %>% 
     group_by(aisle_id, aisle) %>% 
-    summarize(sum_products_ordered = sum(product_id)) %>% 
+    summarize(sum_products_ordered = n()) %>% 
     arrange(desc(sum_products_ordered))
 ```
 
@@ -52,7 +52,16 @@ There are `r nrow(aisles)` aisles in the `instacart` data. The top five aisles o
 `r head(pull(aisles, aisle), 5)`.
 
 
-Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
+###### Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
+
+```{r}
+total_items_aisle <-
+  instacart %>% 
+    group_by(aisle_id, aisle) %>% 
+    summarize(sum_products_ordered = sum(product_id)) %>% 
+    filter(sum_products_ordered > 10000)
+```
+    
 
 *Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
 
