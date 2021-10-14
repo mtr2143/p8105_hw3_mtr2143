@@ -53,15 +53,14 @@ There are `r nrow(aisles)` aisles in the `instacart` data. The top five aisles o
 ###### Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
 
 ```{r, message=FALSE}
-# instacart %>% 
-#   filter(
-#     count(aisle) > 10000
-#   ) %>% 
-#   ggplot(aes(x = aisle)) +
-#   geom_bar() +
-#   coord_flip()
+aisles %>% 
+  filter(total_items_ordered > 10000) %>% 
+  ggplot(aes(x = reorder(aisle, total_items_ordered), y = total_items_ordered)) +
+  geom_bar(stat = "identity", colour = "black", fill = "white") + 
+  xlab("Aisle") + ylab("Count") +
+  coord_flip()
 ```
-    
+
 
 *Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
 
