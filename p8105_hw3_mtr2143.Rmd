@@ -10,6 +10,23 @@ library(tidyverse)
 library(p8105.datasets)
 library(lubridate)
 library(knitr)
+library(patchwork)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
 ```
 
 # Problem 1
@@ -30,12 +47,31 @@ instacart <-
     order_dow = wday(order_dow, label = T)  
     )
 
+dept_less_100k_plot <- 
 instacart %>% 
   group_by(department) %>% 
   summarize(
     n_obs = n()
   ) %>% 
-  arrange(desc(n_obs))
+  filter(department != "missing" & n_obs < 100000) %>% 
+  ggplot(aes(x = reorder(department, n_obs), y = n_obs)) +
+    geom_bar(stat = "identity") + 
+    xlab("Department") + ylab("Count") +
+    coord_flip() 
+
+dept_ge_100k_plot <-
+instacart %>% 
+  group_by(department) %>% 
+  summarize(
+    n_obs = n()
+  ) %>% 
+  filter(department != "missing" & n_obs >= 100000) %>% 
+  ggplot(aes(x = reorder(department, n_obs), y = n_obs)) +
+    geom_bar(stat = "identity") + 
+    xlab("Department") + ylab("Count") +
+    coord_flip()
+
+(dept_ge_100k_plot/dept_less_100k_plot)
 ```
 
 ###### How many aisles are there, and which aisles are the most items ordered from?
@@ -56,9 +92,9 @@ There are `r nrow(aisles)` aisles in the `instacart` data. The top five aisles o
 aisles %>% 
   filter(total_items_ordered > 10000) %>% 
   ggplot(aes(x = reorder(aisle, total_items_ordered), y = total_items_ordered)) +
-  geom_bar(stat = "identity", colour = "black", fill = "white") + 
-  xlab("Aisle") + ylab("Count") +
-  coord_flip()
+    geom_bar(stat = "identity", colour = "black", fill = "white") + 
+    xlab("Aisle") + ylab("Count") +
+    coord_flip()
 ```
 
 ###### Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
