@@ -27,11 +27,10 @@ instacart <-
   instacart %>% 
   mutate(
     order_dow = order_dow + 1,
-    order_dow = wday(order_dow, label = T)
-  )
+    order_dow = wday(order_dow, label = T)  
+    )
 
 instacart %>% 
-  janitor::clean_names() %>%
   group_by(department) %>% 
   summarize(
     n_obs = n()
@@ -77,8 +76,33 @@ instacart %>%
 ```
 
 
-Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
+###### Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
 
+```{r, message=FALSE}
+  instacart %>% 
+    filter(product_name %in% c(
+      "Pink Lady Apples", "Coffee Ice Cream"
+    )) %>% 
+    group_by(product_name, order_dow) %>% 
+    summarize(mean_time = mean(order_hour_of_day)) %>%
+    mutate(
+      mean_time = (mean_time*3600) %>% 
+      seconds_to_period() %>% 
+      hms(), 
+      mean_time = period(
+        second = round(second(mean_time), 0), 
+        minute = minute(mean_time), 
+        hour = hour(mean_time)
+        ), 
+      mean_time = as.POSIXct(mean_time, format = "%H:%M:%S", origin = lubridate::origin, tz = "UTC"), 
+      mean_time = format(mean_time, "%I:%M:%S %p")
+      ) %>% 
+    pivot_wider(
+      names_from = "order_dow", 
+      values_from = "mean_time"
+    ) %>% 
+    kable(caption = "Average Time Coffee Ice Cream & Pink Lady Apples are Ordered per Day of Week")
+```
 
 
 
