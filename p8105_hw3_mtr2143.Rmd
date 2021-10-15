@@ -11,6 +11,7 @@ library(p8105.datasets)
 library(lubridate)
 library(knitr)
 library(patchwork)
+library(ggridges)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -36,7 +37,7 @@ scale_fill_discrete = scale_fill_viridis_d
 * description of key variables
 * give illustrative examples of observations
 
-```{r}
+```{r, message=FALSE}
 data("instacart")
 
 
@@ -71,7 +72,28 @@ instacart %>%
     xlab("Department") + ylab("Count") +
     coord_flip()
 
-(dept_ge_100k_plot/dept_less_100k_plot)
+(dept_ge_100k_plot + dept_less_100k_plot)
+
+instacart %>% 
+  select(order_id, order_dow, order_hour_of_day) %>% 
+  distinct %>% 
+  mutate(
+    time_of_day =
+      ifelse(order_hour_of_day %in% 5:11, "morning", 
+        ifelse(order_hour_of_day %in% 12:16, "afternoon", 
+          ifelse(order_hour_of_day %in% 17:20, "evening", "night")
+        )
+      ) %>% 
+    factor(levels = c("morning", "afternoon", "evening", "night"))
+    ) %>% 
+  group_by(time_of_day, order_dow) %>% 
+  summarize(
+    n_orders = n()
+  ) %>% 
+  arrange(time_of_day) %>% 
+  ggplot(aes(x = order_dow, y = n_orders , fill = time_of_day)) +
+    geom_col()
+
 ```
 
 ###### How many aisles are there, and which aisles are the most items ordered from?
