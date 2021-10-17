@@ -257,6 +257,21 @@ brfss %>%
   kable(caption = "States observed 7 or more times, 2010")
 ```
 
+###### Spaghetti plot of average data_value over time among 'Excellent' responses:
+
+```{r, spaghetti plot, message=FALSE, warning=FALSE}
+brfss %>% 
+  filter(response == "Excellent") %>% 
+  select(year, state, data_value) %>% 
+  group_by(year, state) %>% 
+  summarize(mean_data = mean(data_value)) %>% 
+  ggplot(aes(x = year, y = mean_data, group = state)) +
+    geom_line() +
+    xlab("Year") + ylab("Mean Data Value")
+```
+
+
+
 
 
 
