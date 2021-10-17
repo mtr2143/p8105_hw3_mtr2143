@@ -45,7 +45,7 @@ instacart <-
     )
 ```
 
-There are `r nrow(instacart)`observations and `r ncol(instacart)` in the `instacart` data where each observation represents a product that was purchased as part of an Instacart order. Key variables include:
+There are `r nrow(instacart)` observations and `r ncol(instacart)` in the `instacart` data where each observation represents a product that was purchased as part of an Instacart order. Key variables include:
 
 *`reordered`: binary variable indicating if a user has ordered the product in the past  
 *`order_dow`: the day of the week the order was placed  
@@ -268,6 +268,22 @@ brfss %>%
   ggplot(aes(x = year, y = mean_data, group = state)) +
     geom_line() +
     xlab("Year") + ylab("Mean Data Value")
+```
+
+##### Make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
+
+```{r, two panel plot, message=FALSE, warning=FALSE}
+brfss %>% 
+  filter(year %in% c(2006, 2010) & state == "NY") %>% 
+  ggplot(aes(x = data_value, fill = response)) +
+    geom_density(alpha = .5) +
+    xlab("Data Value") +
+    theme(
+      legend.position = "bottom",
+      axis.title.y = element_blank()
+          ) + 
+    labs(fill = "Response") +
+    facet_grid(rows = vars(year), switch = "y")
 ```
 
 
