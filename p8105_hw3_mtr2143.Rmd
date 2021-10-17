@@ -80,7 +80,10 @@ instacart %>%
       labels = c("0", "100k", "200k", "300k", "400k")) +
     coord_flip()
 
-(dept_ge_100k_plot + dept_less_100k_plot)
+(dept_ge_100k_plot + dept_less_100k_plot) +
+  plot_annotation(
+    title = 'Total products ordered by department'
+    )
 
 #number of orders by time of day and day of week
 
@@ -102,7 +105,10 @@ instacart %>%
   ) %>% 
   arrange(time_of_day) %>% 
   ggplot(aes(x = order_dow, y = n_orders , fill = time_of_day)) +
-    geom_col()
+    geom_col() +
+    xlab("Day of Week") + ylab("Order Count") +
+    labs(fill = "Time of Day")
+
 
 # instacart %>% 
 #   select(order_number, days_since_prior_order) %>% 
@@ -132,6 +138,7 @@ aisles %>%
   ggplot(aes(x = reorder(aisle, total_items_ordered), y = total_items_ordered)) +
     geom_bar(stat = "identity", colour = "black", fill = "white") + 
     xlab("Aisle") + ylab("Count") +
+    theme(axis.text.y = element_text(size = 7)) +
     coord_flip()
 ```
 
