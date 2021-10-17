@@ -201,5 +201,38 @@ instacart %>%
     kable(caption = "Average Time Coffee Ice Cream & Pink Lady Apples are Ordered per Day of Week")
 ```
 
+# Problem 2
+
+##### Load BRFSS and clean data
+
+```{r, load and clean BRFSS data, message=FALSE}
+data("brfss_smart2010")
+
+brfss <-
+  brfss_smart2010 %>% 
+  janitor::clean_names() %>% 
+  rename(
+    state = locationabbr,
+    county = locationdesc
+  ) %>% 
+  filter(
+    topic == "Overall Health"
+  ) %>% 
+  select(!(
+    c(class, topic, display_order, data_value_unit, data_value_type, 
+      data_value_footnote_symbol, data_source, class_id, topic_id, location_id,
+      question_id, respid, geo_location
+    )
+  )) %>%
+  mutate(
+    county = str_remove_all(county, "^\\w\\w - ") %>% 
+      str_remove_all(" County$"), 
+    response = factor(
+      response, ordered = T, levels = c(
+        "Poor", "Fair", "Good", "Very good", "Excellent"
+      )
+    )
+  )
+```
 
 
