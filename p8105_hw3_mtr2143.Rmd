@@ -32,10 +32,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 # Problem 1
 
-###### EDA of Instacart data
-* size and structure of the dataset
-* description of key variables
-* give illustrative examples of observations
+##### Load Instacart data
 
 ```{r, load data in, message=FALSE}
 data("instacart")
@@ -49,9 +46,14 @@ instacart <-
     )
 ```
 
-```{r, plots eda, message=FALSE}
-#bar plot: products ordered by dept
+##### EDA of Instacart data
+* size and structure of the dataset
+* description of key variables
+* give illustrative examples of observations
 
+###### Bar plot: products ordered by dept
+
+```{r, bar plot products dept, message=FALSE}
 dept_less_100k_plot <- 
 instacart %>% 
   group_by(department) %>% 
@@ -84,9 +86,12 @@ instacart %>%
   plot_annotation(
     title = 'Total products ordered by department'
     )
+```
 
-#number of orders by time of day and day of week
 
+###### Number of orders by time of day and day of week
+
+```{r, col plot time of day and dow, message=FALSE}
 instacart %>% 
   select(order_id, order_dow, order_hour_of_day) %>% 
   distinct %>% 
@@ -118,7 +123,7 @@ instacart %>%
 
 ```
 
-###### How many aisles are there, and which aisles are the most items ordered from?
+#### How many aisles are there, and which aisles are the most items ordered from?
 
 ```{r, message=FALSE}
 aisles <-
@@ -130,7 +135,7 @@ There are `r nrow(aisles)` aisles in the `instacart` data. The top five aisles o
 `r head(pull(aisles, aisle), 5)`.
 
 
-###### Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
+##### Make a plot that shows the number of items ordered in each aisle, limiting this to aisles with more than 10000 items ordered. Arrange aisles sensibly, and organize your plot so others can read it.
 
 ```{r, message=FALSE}
 aisles %>% 
@@ -142,7 +147,7 @@ aisles %>%
     coord_flip()
 ```
 
-###### Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
+##### Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
 
 ```{r, message=FALSE}
 instacart %>% 
@@ -156,8 +161,7 @@ instacart %>%
            Veggies Aisles")
 ```
 
-
-###### Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
+##### Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
 
 ```{r, message=FALSE}
   instacart %>% 
