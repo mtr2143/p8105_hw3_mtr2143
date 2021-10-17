@@ -37,7 +37,6 @@ scale_fill_discrete = scale_fill_viridis_d
 ```{r, load data in, message=FALSE}
 data("instacart")
 
-
 instacart <-
   instacart %>% 
   mutate(
@@ -113,14 +112,6 @@ instacart %>%
     geom_col() +
     xlab("Day of Week") + ylab("Order Count") +
     labs(fill = "Time of Day")
-
-
-# instacart %>% 
-#   select(order_number, days_since_prior_order) %>% 
-#   distinct %>% 
-#   ggplot(aes(x = order_number, y = days_since_prior_order)) +
-#   geom_histogram(stat = "identity")
-
 ```
 
 #### How many aisles are there, and which aisles are the most items ordered from?
