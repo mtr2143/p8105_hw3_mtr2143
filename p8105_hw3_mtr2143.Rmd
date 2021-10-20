@@ -64,12 +64,16 @@ dept_products_total <-
     n_obs = n()
   ) %>% 
   arrange(desc(n_obs)) %>% 
-  filter(department != 'missing')
+  filter(department != 'missing') %>% 
+  mutate(
+    over_100k = ifelse(n_obs > 100000, 1, 0)
+  )
+
 
 dept_less_100k_plot <- 
   dept_products_total %>% 
   filter(n_obs < 100000) %>% 
-  ggplot(aes(x = reorder(department, n_obs), y = n_obs)) +
+  ggplot(aes(x = reorder(department, n_obs), y = n_obs, fill = n_obs)) +
     geom_bar(stat = "identity") + 
     xlab("Department") + ylab("Count") +
     scale_y_continuous(breaks = c(0, 20000, 40000, 60000, 80000),
@@ -79,7 +83,7 @@ dept_less_100k_plot <-
 dept_ge_100k_plot <-
   dept_products_total %>% 
   filter(n_obs >= 100000) %>% 
-  ggplot(aes(x = reorder(department, n_obs), y = n_obs)) +
+  ggplot(aes(x = reorder(department, n_obs), y = n_obs, fill = n_obs)) +
     geom_bar(stat = "identity") + 
     xlab("Department") + ylab("Count") +
     scale_y_continuous(breaks = c(0, 100000, 200000, 300000, 400000),
@@ -327,6 +331,18 @@ activity <-
 names(activity) <-
   names(activity) %>% 
   str_replace_all("activity", "min")
+
+activity <-
+    activity %>% 
+    pivot_longer(
+      cols = starts_with("min_"), 
+      names_to = "min", 
+      names_prefix = "min_",
+      values_to = "activity"
+    ) %>% 
+    mutate(
+      min = as.numeric(min)
+    )
 ```
 
 Description of data goes here
@@ -336,17 +352,17 @@ Description of data goes here
 ```{r, total activity per day, message=FALSE, warning=FALSE}
 tot_act_per_day <-
   activity %>% 
-    mutate(
-      total_act = rowSums(across(str_subset(colnames(activity), "^min")))
-    ) %>% 
-    select(day_id, day, total_act) 
-
+  group_by(day_id, day) %>% 
+  summarize(
+    activity = sum(activity)
+  )
+   
 tot_act_per_day %>% 
   kable(caption = "Total Activity per Day")
 
 tot_act_per_day %>% 
-  ggplot(aes(x = day, y = total_act)) +
-  geom_boxplot(aes(color = day)) +
+  ggplot(aes(x = day, y = activity, group = day)) +
+  geom_boxplot(aes(fill = day)) +
   xlab("Day of the Week") + ylab("Total Activity") +
   theme(
     legend.position = "none"
@@ -358,27 +374,12 @@ From the boxplot, we know that Wednesdays have the most consistent amount of tot
 #### Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
 
 ```{r, 24 hour activity by day of week, message=FALSE, warning=FALSE}
-twenty_four_hr_activity <-
-  activity %>% 
-    pivot_longer(
-      cols = starts_with("min_"), 
-      names_to = "min", 
-      names_prefix = "min_",
-      values_to = "activity"
-    ) %>% 
-    mutate(
-      min = as.numeric(min)
-    )
-
-twenty_four_hr_activity %>% 
+activity %>% 
   ggplot(aes(x = min, y = activity, group = day_id)) +
   geom_point(aes(color = day), size = .4, alpha = .5) +
   theme(
     legend.position = "right"
   ) 
-  
-
-
 ```
 
 
