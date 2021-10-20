@@ -45,7 +45,7 @@ instacart <-
     )
 ```
 
-There are `r nrow(instacart)` observations and `r ncol(instacart)` in the `instacart` data where each observation represents a product that was purchased as part of an Instacart order. Key variables include:
+There are `r nrow(instacart)` observations and `r ncol(instacart)` columns in the `instacart` data where each observation represents a product that was purchased as part of an Instacart order. Key variables include:
 
 *`reordered`: binary variable indicating if a user has ordered the product in the past  
 *`order_dow`: the day of the week the order was placed  
@@ -131,6 +131,18 @@ order_time_by_day %>%
     labs(fill = "Time of Day")
 
 ```
+
+```{r}
+instacart %>% 
+  select(department_id, department, aisle) %>% 
+  distinct() %>% 
+  group_by(department) %>% 
+  summarize(
+    num_aisle = n()
+  ) %>% 
+  arrange(desc(num_aisle))
+```
+
 
 To find out how many orders were placed at each time of day, I considered 5 AM to 11 AM morning, 12 PM to 4 PM afternoon, 5 PM to 8 PM evening, and 9 PM to 4 AM night. The day with the most orders overall was `r head(pull(total_orders_per_day, order_dow), 1)`. with `r head(pull(total_orders_per_day, total_orders), 1)` orders, and the day with the least orders overall was `r tail(pull(total_orders_per_day, order_dow), 1)`. with `r tail(pull(total_orders_per_day, total_orders), 1)` orders. The most popular time to place an order was `r head(pull(order_time_by_day, order_dow), 1)`. `r head(pull(order_time_by_day, time_of_day), 1)` with `r head(pull(order_time_by_day, n_orders), 1)` orders placed, and the least popular time to place an order was `r tail(pull(order_time_by_day, order_dow), 1)`. `r tail(pull(order_time_by_day, time_of_day), 1)` with `r tail(pull(order_time_by_day, n_orders), 1)` orders placed.
 
@@ -266,7 +278,7 @@ brfss %>%
   group_by(year, state) %>% 
   summarize(mean_data = mean(data_value)) %>% 
   ggplot(aes(x = year, y = mean_data, group = state)) +
-    geom_line(aes(color = state), size = .8, alpha = .8) +
+    geom_line(aes(color = state), size = .6, alpha = .8) +
     xlab("Year") + ylab("Mean Data Value") +
     theme(
       legend.position = "right"
@@ -342,6 +354,32 @@ tot_act_per_day %>%
 ```
 
 From the boxplot, we know that Wednesdays have the most consistent amount of total activity, while Saturdays are the most variable. However, across all days of the week, there are similar values for the median. 
+
+#### Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
+
+```{r, 24 hour activity by day of week, message=FALSE, warning=FALSE}
+twenty_four_hr_activity <-
+  activity %>% 
+    pivot_longer(
+      cols = starts_with("min_"), 
+      names_to = "min", 
+      names_prefix = "min_",
+      values_to = "activity"
+    ) %>% 
+    mutate(
+      min = as.numeric(min)
+    )
+
+twenty_four_hr_activity %>% 
+  ggplot(aes(x = min, y = activity, group = day_id)) +
+  geom_point(aes(color = day), size = .4, alpha = .5) +
+  theme(
+    legend.position = "right"
+  ) 
+  
+
+
+```
 
 
 
