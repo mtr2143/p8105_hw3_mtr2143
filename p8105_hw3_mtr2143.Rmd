@@ -64,36 +64,17 @@ dept_products_total <-
     n_obs = n()
   ) %>% 
   arrange(desc(n_obs)) %>% 
-  filter(department != 'missing') %>% 
-  mutate(
-    over_100k = ifelse(n_obs > 100000, 1, 0)
-  )
+  filter(department != 'missing')
 
-
-dept_less_100k_plot <- 
-  dept_products_total %>% 
-  filter(n_obs < 100000) %>% 
+dept_products_total %>% 
   ggplot(aes(x = reorder(department, n_obs), y = n_obs, fill = n_obs)) +
     geom_bar(stat = "identity") + 
     xlab("Department") + ylab("Count") +
-    scale_y_continuous(breaks = c(0, 20000, 40000, 60000, 80000),
-      labels = c("0", "20k", "40k", "60k", "80k")) +
-    coord_flip() 
-
-dept_ge_100k_plot <-
-  dept_products_total %>% 
-  filter(n_obs >= 100000) %>% 
-  ggplot(aes(x = reorder(department, n_obs), y = n_obs, fill = n_obs)) +
-    geom_bar(stat = "identity") + 
-    xlab("Department") + ylab("Count") +
-    scale_y_continuous(breaks = c(0, 100000, 200000, 300000, 400000),
-      labels = c("0", "100k", "200k", "300k", "400k")) +
-    coord_flip()
-
-(dept_ge_100k_plot + dept_less_100k_plot) +
-  plot_annotation(
-    title = 'Total products ordered by department'
-    )
+    coord_flip() +
+    theme(
+      legend.position = "none"
+          ) +
+    ggtitle(label = "Products Ordered by Department")
 ```
 
 The five departments with the most purchased products are `r head(pull(dept_products_total, department), 5)`, and the five departments with the least purchased products are `r tail(pull(dept_products_total, department), 5)`.
@@ -132,7 +113,8 @@ order_time_by_day %>%
   ggplot(aes(x = order_dow, y = n_orders , fill = time_of_day)) +
     geom_col() +
     xlab("Day of Week") + ylab("Order Count") +
-    labs(fill = "Time of Day")
+    labs(fill = "Time of Day") +
+    ggtitle(label = "Order Quantity by Day of Week")
 
 ```
 
@@ -169,10 +151,12 @@ There are `r nrow(aisles)` aisles in the `instacart` data. The top five aisles o
 aisles %>% 
   filter(total_items_ordered > 10000) %>% 
   ggplot(aes(x = reorder(aisle, total_items_ordered), y = total_items_ordered)) +
-    geom_bar(stat = "identity", colour = "black", fill = "white") + 
+    geom_bar(stat = "identity", aes(fill = total_items_ordered)) + 
     xlab("Aisle") + ylab("Count") +
-    theme(axis.text.y = element_text(size = 7)) +
-    coord_flip()
+    theme(axis.text.y = element_text(size = 7),
+          legend.position = "none") +
+    coord_flip() +
+    ggtitle(label = "Number of Items Ordered per Aisle")
 ```
 
 #### Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
@@ -286,7 +270,9 @@ brfss %>%
     xlab("Year") + ylab("Mean Data Value") +
     theme(
       legend.position = "right"
-    )
+    ) +
+    ggtitle(label = NULL, subtitle = "Average Data Value over Time among
+            'Excellent' Responses")
 
 ```
 
@@ -303,7 +289,8 @@ brfss %>%
       axis.title.y = element_blank()
           ) + 
     labs(fill = "Response") +
-    facet_grid(rows = vars(year), switch = "y")
+    facet_grid(rows = vars(year), switch = "y") +
+    ggtitle("Data Value Distribution by Responses")
 ```
 
 # Problem 3
@@ -366,10 +353,11 @@ tot_act_per_day %>%
   xlab("Day of the Week") + ylab("Total Activity") +
   theme(
     legend.position = "none"
-  )
+  ) +
+  ggtitle("Total Activity by Day of the Week")
 ```
 
-From the boxplot, we know that Wednesdays have the most consistent amount of total activity, while Saturdays are the most variable. However, across all days of the week, there are similar values for the median. 
+From the boxplot, we know that Wednesdays have the most consistent amount of total activity, while Saturdays are the most spread out. However, across all days of the week, there are similar values for the median. 
 
 #### Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
 
@@ -377,9 +365,11 @@ From the boxplot, we know that Wednesdays have the most consistent amount of tot
 activity %>% 
   ggplot(aes(x = min, y = activity, group = day_id)) +
   geom_point(aes(color = day), size = .4, alpha = .5) +
+  xlab("Minute") + ylab("Total Activity") +
   theme(
     legend.position = "right"
-  ) 
+  ) + 
+  ggtitle("24 Hour Activity by Day of Week")
 ```
 
 
