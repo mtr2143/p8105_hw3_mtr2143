@@ -13,12 +13,6 @@ library(knitr)
 library(patchwork)
 library(ggridges)
 
-knitr::opts_chunk$set(
-  fig.width = 6,
-  fig.asp = .6,
-  out.width = "90%"
-)
-
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 options(
@@ -118,18 +112,6 @@ order_time_by_day %>%
 
 ```
 
-```{r}
-instacart %>% 
-  select(department_id, department, aisle) %>% 
-  distinct() %>% 
-  group_by(department) %>% 
-  summarize(
-    num_aisle = n()
-  ) %>% 
-  arrange(desc(num_aisle))
-```
-
-
 To find out how many orders were placed at each time of day, I considered 5 AM to 11 AM morning, 12 PM to 4 PM afternoon, 5 PM to 8 PM evening, and 9 PM to 4 AM night. The day with the most orders overall was `r head(pull(total_orders_per_day, order_dow), 1)`. with `r head(pull(total_orders_per_day, total_orders), 1)` orders, and the day with the least orders overall was `r tail(pull(total_orders_per_day, order_dow), 1)`. with `r tail(pull(total_orders_per_day, total_orders), 1)` orders. The most popular time to place an order was `r head(pull(order_time_by_day, order_dow), 1)`. `r head(pull(order_time_by_day, time_of_day), 1)` with `r head(pull(order_time_by_day, n_orders), 1)` orders placed, and the least popular time to place an order was `r tail(pull(order_time_by_day, order_dow), 1)`. `r tail(pull(order_time_by_day, time_of_day), 1)` with `r tail(pull(order_time_by_day, n_orders), 1)` orders placed.
 
 
@@ -159,6 +141,8 @@ aisles %>%
     ggtitle(label = "Number of Items Ordered per Aisle")
 ```
 
+Of items that have been purchased over 10000 times, the aisle with the most items ordered are `fresh vegetables`, and the aisle with the least items ordered is `butter`. There are only two aisles with over 100000 products ordered are `fresh vegetables` and `fresh fruits`.
+
 #### Make a table showing the three most popular items in each of the aisles “baking ingredients”, “dog food care”, and “packaged vegetables fruits”. Include the number of times each item is ordered in your table.
 
 ```{r, message=FALSE}
@@ -172,6 +156,10 @@ instacart %>%
           "Three Most Popular Items in Baking Ingredients, Dog Food Care, and Packaged Fruits &
            Veggies Aisles")
 ```
+
+The most popular product in `baking ingredients` was Light Brown Sugar, which was purchased 499 times. 
+The most popular product in `dog food care` was Snack Stick Chicken & Rice Recipe Dog Treats, which were ordered 30 times. 
+The most popular product in `packaged vegetables fruits` was Organic Baby Spinach, which was purchased 9784 times. 
 
 #### Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week
 
@@ -200,6 +188,9 @@ instacart %>%
     ) %>% 
     kable(caption = "Average Time Coffee Ice Cream & Pink Lady Apples are Ordered per Day of Week")
 ```
+
+The earliest and latest times `Coffee Ice Cream` is ordered are 12:15 PM on Friday and 3:22 PM on Tuesday. 
+The earliest and latest time `Pink Lady Apples` are ordered are 11:21 AM on Monday and 2:15 PM on Wednesday. 
 
 # Problem 2
 
@@ -257,6 +248,10 @@ brfss %>%
   kable(caption = "States observed 7 or more times, 2010")
 ```
 
+In 2002, of the states observed seven or more times, Pennsylvania was observed the most amount of times (10), and Connecticut, Florida, and North Carolina were observed the least amount of times (7). 
+
+In 2010, of the states observed seven or more times, Florida was observed the most amount of times (41), and Colorado, Pennsylvania, and South Carolina were observed the least amount of times (7). 
+
 #### Spaghetti plot of average data_value over time among 'Excellent' responses:
 
 ```{r, spaghetti plot, message=FALSE, warning=FALSE}
@@ -269,12 +264,15 @@ brfss %>%
     geom_line(aes(color = state), size = .6, alpha = .8) +
     xlab("Year") + ylab("Mean Data Value") +
     theme(
-      legend.position = "right"
+      legend.position = "right",
+      legend.text = element_text(size = )
     ) +
     ggtitle(label = NULL, subtitle = "Average Data Value over Time among
-            'Excellent' Responses")
+            'Excellent' Responses") 
 
 ```
+
+2002 is the `year` with the highest observed average `data_value`, and 2005 is the `year` with the lowest observed average `data_value`. From `r min(pull(brfss, year))` to `r max(pull(brfss, year))`, most states have an average `data_value` from 20 to 25, and there also appears to be a slight downward trend in average `data value` as time goes on. 
 
 #### Make a two-panel plot showing, for the years 2006, and 2010, distribution of data_value for responses (“Poor” to “Excellent”) among locations in NY State.
 
@@ -292,6 +290,8 @@ brfss %>%
     facet_grid(rows = vars(year), switch = "y") +
     ggtitle("Data Value Distribution by Responses")
 ```
+
+Overall, the distributions of `data value` by `response` for 2006 and 2010 are mostly similar with a few minor differences. In 2006, the observations for `data value` among those with Poor and Fair for `response` are not as spread out as it is in 2010. 
 
 # Problem 3
 
@@ -332,7 +332,15 @@ activity <-
     )
 ```
 
-Description of data goes here
+The tidied data set has `r nrow(activity)` observations and `r ncol(activity)` where each observation represents a minute of observation on the accelerometer over the `r max(pull(activity, week))` weeks of observation. Key variables include:
+
+`day id`: the day of observation, ranging from `r min(pull(activity, day_id))` to `r max(pull(activity, day_id))` days. 
+
+`day`: day of the week observation takes place
+
+`weekday_or_weekend`: a factor that determines if `day` takes place on weekday or weekend
+
+`activity`: physical activity measured during that minute
 
 #### Using your tidied dataset, aggregate accross minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
 
@@ -367,13 +375,13 @@ activity %>%
   geom_point(aes(color = day), size = .4, alpha = .5) +
   xlab("Minute") + ylab("Total Activity") +
   theme(
-    legend.position = "right"
+    legend.position = "right",
+    legend.title = element_blank()
   ) + 
   ggtitle("24 Hour Activity by Day of Week")
 ```
 
-
-
+The vast majority of the patients' total activity is clustered below an activity level of 2500 with only 3 observed minutes of the `r nrow(activity)` total minutes of observation exceeding an activity of 7500. 
 
 
 
